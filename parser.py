@@ -1,6 +1,8 @@
 import re
 
-stock = {}
+stock = {} # {} => dictionary
+optimize = [] # [] => list
+process = [] #() => tupples
 
 def setTupple(cmd, line):
 	name = cmd[0]
@@ -9,8 +11,23 @@ def setTupple(cmd, line):
 	result = {}
 
 	parenthesis = line.strip().split("(")
-	nd = parenthesis[1].strip().split(")")[0].split(";")
-	res = parenthesis[2].strip().split(")")[0].split(";")
+	if len(parenthesis) == 3:
+		nd = parenthesis[1].strip().split(")")[0].split(";")
+		res = parenthesis[2].strip().split(")")[0].split(";")
+	elif len(parenthesis) == 1:
+		nd = []
+		res = []
+	elif len(parenthesis) == 2:
+		tmp = parenthesis[1].strip().split(")")[1]
+		if tmp.count(':') == 2:
+			nd = parenthesis[1].strip().split(")")[0].split(";")
+			res = []
+		else:
+			nd = []
+			res = parenthesis[1].strip().split(")")[0].split(";")
+	else:
+		print "ERROR"
+		exit()
 
 	for n in nd:
 		tmp = n.split(":")
@@ -21,13 +38,11 @@ def setTupple(cmd, line):
 		if (tmp[0] not in stock):
 			stock[tmp[0]] = 0
 		result[tmp[0]] = tmp[1]
-	
+
 	return (name, need, result, delay)
 
 def	parse_file(fd):
 	t_list = fd.read().splitlines()
-	process = []
-	optimize = []
 
 	for i, lines in enumerate(t_list):
 		line = lines.strip().split("#")[0]
@@ -41,6 +56,3 @@ def	parse_file(fd):
 					optimize.extend(tmp.strip().split(";"))
 			else:
 				process.append(setTupple(cmd, line))
-	print stock
-	print process
-	print optimize
